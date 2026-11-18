@@ -137,3 +137,13 @@ body {
   background-color: #1e3a8a; /* Highlight row */
   color: white;
 }
+
+/* Add this to the bottom of index.css */
+.react-flow__node {
+  transition: transform 0.2s ease, filter 0.2s ease;
+}
+.react-flow__node:hover {
+  transform: translateY(-2px);
+  filter: drop-shadow(0 4px 12px rgba(59, 130, 246, 0.2));
+  cursor: pointer;
+}

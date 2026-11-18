@@ -1,16 +1,17 @@
 import { Handle, Position } from 'reactflow';
-import { Laptop, GitBranch, Server } from 'lucide-react';
+import { Laptop, GitBranch, Server, Box } from 'lucide-react';
 
 export default function DevOpsNode({ data }) {
   let Icon = Laptop;
   if (data.type === 'git') Icon = GitBranch;
   if (data.type === 'server') Icon = Server;
+  if (data.type === 'docker') Icon = Box;
 
-  // Define colors based on node type
   const getBorderColor = () => {
-    if (data.active) return '#3b82f6'; // Blue when active
-    if (data.type === 'git') return '#f97316'; // Git Orange
-    if (data.type === 'server') return '#10b981'; // Server Green
+    if (data.active) return '#3b82f6'; 
+    if (data.type === 'git') return '#f97316'; 
+    if (data.type === 'server') return '#10b981'; 
+    if (data.type === 'docker') return '#0ea5e9'; // Light blue for Docker
     return '#334155';
   };
 
@@ -29,12 +30,10 @@ export default function DevOpsNode({ data }) {
       minWidth: '150px'
     }}>
       <Handle type="target" position={Position.Left} style={{ background: '#64748b' }} />
-      
       <Icon size={20} color={getBorderColor()} />
       <div style={{ fontFamily: 'monospace', fontWeight: 'bold', fontSize: '14px' }}>
         {data.label}
       </div>
-      
       <Handle type="source" position={Position.Right} style={{ background: '#64748b' }} />
     </div>
   );
