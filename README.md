@@ -57,3 +57,43 @@ npm run dev
 ```
 
 5. Open http://localhost:5173 in your browser.
+
+🧠 How to Add a New Module
+The app is designed to be highly scalable. To add a new module:
+
+Create a new file in src/data/ (e.g., terraformModule.js).
+
+Export an object containing title, desc, nodes, edges, codeSnippet, and a quiz.
+
+Import the module in src/App.jsx and add it to the MODULES object.
+
+### 2. Add the Live Link to GitHub
+
+1. Go to your GitHub repo: `https://github.com/mierule7/ArgoCD-Training`
+2. On the right side of the screen, click the **⚙️ (gear icon)** next to **"About"**.
+3. Paste your Render URL (e.g., `https://devops-explorer.onrender.com`) into the **Website** field.
+4. In the **Topics** box, add: `react`, `vite`, `devops`, `education`, `react-flow`, `kubernetes`, `argocd`, `gitops`.
+5. Click **Save changes**.
+
+### 3. LinkedIn / Resume Blurb
+
+If you post this on LinkedIn, here is a template you can use:
+
+> **I built a visual DevOps learning platform! 🚀**
+>
+> Understanding how tools like Git, Docker, Kubernetes, and ArgoCD interact can be overwhelming. So, I built **DevOps Explorer**—an interactive web app that animates the data flow between these tools.
+>
+> **Key features:**
+> ✅ Interactive architecture diagrams using React Flow
+> ✅ Live terminal logging and Mac-style code snippet viewers
+> ✅ Built-in knowledge quizzes with persistent progress tracking
+> ✅ Fully responsive dark-mode UI
+>
+> **Tech Stack:** React, Vite, React Flow, CSS.
+>
+> Check out the live app here: [Your Render Link]
+> View the code on GitHub: https://github.com/mierule7/ArgoCD-Training.git
+>
+> #DevOps #React #WebDevelopment #Portfolio #GitOps
+
+You've done an incredible job. The code is clean, the UI looks professional, and it solves a real educational problem. You should be very proud of this project!
