@@ -1,16 +1,56 @@
-# React + Vite
+# DevOps Explorer 🚀
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+An interactive, visual learning platform designed to help beginners and developers understand modern DevOps workflows.
 
-Currently, two official plugins are available:
+Instead of just reading documentation, users can watch data flow between tools step-by-step, inspect real configuration files (like Dockerfiles and YAML), and test their knowledge with built-in quizzes.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## 🌟 Features
 
-## React Compiler
+- **Interactive Architecture Diagrams:** Uses React Flow to animate data packets moving between nodes (e.g., Git → Docker → Kubernetes).
+- **Live Terminal Log:** A real-time table that logs commands and API calls as the animation plays.
+- **Code Snippet Viewer:** Displays syntax-highlighted code snippets (Dockerfiles, K8s manifests) inside a Mac-style editor window.
+- **Knowledge Checks:** Modal quizzes at the end of each module to reinforce learning, complete with explanations.
+- **Progress Tracking:** Uses browser `localStorage` to save completed modules so users don't lose their progress.
+- **Modular Architecture:** Adding new modules (like Terraform or Prometheus) only requires adding a simple data file.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## 📚 Modules Included
 
-## Expanding the ESLint configuration
+1.  **Git Workflow:** Local Repo → GitHub → CI/CD Pipeline
+2.  **Docker Build:** Source Code → Dockerfile → Registry
+3.  **Kubernetes Deploy:** kubectl → Control Plane → Worker Node
+4.  **ArgoCD (GitOps):** Git Repo → ArgoCD → K8s Cluster
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## 🛠️ Tech Stack
+
+- **Framework:** [React](https://reactjs.org/) (via [Vite](https://vitejs.dev/))
+- **Diagramming:** [React Flow](https://reactflow.dev/)
+- **Icons:** [Lucide React](https://lucide.dev/)
+- **Styling:** Custom CSS (Dark Mode)
+- **Deployment:** Render
+
+## 🚀 Getting Started (Local Development)
+
+To run this project locally on your machine:
+
+1. Clone the repository:
+
+   ```bash
+   git clone https://github.com/mierule7/ArgoCD-Training.git
+   ```
+
+2. Navigate into the project folder:
+
+bash
+cd ArgoCD-Training
+
+3. Install dependencies:
+
+bash
+npm install
+
+4. Start the development server:
+
+bash
+npm run dev
+
+5. Open http://localhost:5173 in your browser.
