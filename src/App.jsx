@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { argocdModule } from './data/argocdModule';
 import ReactFlow, { Background, useNodesState, useEdgesState } from 'reactflow';
 import 'reactflow/dist/style.css';
 import DevOpsNode from './ArgocdNode'; 
@@ -10,18 +9,19 @@ import './index.css';
 import { gitModule } from './data/gitModule';
 import { dockerModule } from './data/dockerModule';
 import { k8sModule } from './data/k8sModule';
+import { argocdModule } from './data/argocdModule';
 
 const nodeTypes = { custom: DevOpsNode };
 
-// CREATE A REGISTRY OF ALL MODULES
 const MODULES = {
   git: gitModule,
   docker: dockerModule,
   k8s: k8sModule,
-  argocd: argocdModule // <-- Add this
+  argocd: argocdModule
 };
 
 export default function App() {
+  const [view, setView] = useState('home'); // 'home' or 'simulator'
   const [currentModuleKey, setCurrentModuleKey] = useState('git');
   const [nodes, setNodes, onNodesChange] = useNodesState(MODULES['git'].nodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(MODULES['git'].edges);
@@ -30,17 +30,16 @@ export default function App() {
   const [showQuiz, setShowQuiz] = useState(false);
   const [selectedAnswer, setSelectedAnswer] = useState(null);
 
-  // Load saved progress from localStorage, or start with an empty object
+  // Load saved progress
   const [completedModules, setCompletedModules] = useState(() => {
     const saved = localStorage.getItem('devopsProgress');
     return saved ? JSON.parse(saved) : {};
   });
 
-    // Save to localStorage whenever completedModules changes
+  // Save progress
   useEffect(() => {
     localStorage.setItem('devopsProgress', JSON.stringify(completedModules));
   }, [completedModules]);
-  
 
   const handleModuleChange = (event) => {
     const newModuleKey = event.target.value;
@@ -119,18 +118,16 @@ export default function App() {
       setNodeActive('controlplane', false);
       setNodeActive('worker', false);
     }
-      else if (currentModuleKey === 'argocd') {
+    else if (currentModuleKey === 'argocd') {
       setNodeActive('argocd', true);
       setEdgeActive('e-git-argocd', true);
       addPacket({ time: "0.000s", src: "ArgoCD", dst: "Git Repo", proto: "HTTPS", info: "Polling repository for changes", size: "2 KB" });
       await wait(1500);
-      
       setEdgeActive('e-git-argocd', false);
       setEdgeActive('e-argocd-k8s', true);
       setNodeActive('k8s', true);
       addPacket({ time: "1.500s", src: "ArgoCD", dst: "K8s Cluster", proto: "kubectl", info: "Sync: Apply manifests", size: "12 KB" });
       await wait(1500);
-      
       setEdgeActive('e-argocd-k8s', false);
       setNodeActive('argocd', false);
       setNodeActive('k8s', false);
@@ -140,25 +137,99 @@ export default function App() {
     setShowQuiz(true); 
   };
 
-    const handleAnswerClick = (index) => {
-    if (selectedAnswer !== null) return; // Prevent changing answer
+  const handleAnswerClick = (index) => {
+    if (selectedAnswer !== null) return;
     setSelectedAnswer(index);
-
-    // If they got it right, mark this module as complete!
     if (index === activeModule.quiz.correctIndex) {
-      setCompletedModules((prev) => ({
-        ...prev,
-        [currentModuleKey]: true
-      }));
+      setCompletedModules((prev) => ({ ...prev, [currentModuleKey]: true }));
     }
   };
 
   const activeModule = MODULES[currentModuleKey];
 
+  // ==========================================
+  // 1. THE LANDING PAGE VIEW
+  // ==========================================
+  if (view === 'home') {
+    const moduleList = [
+      { key: 'git', title: 'Git Workflow', desc: 'Learn how to commit, push, and trigger CI/CD pipelines.', icon: '🌿' },
+      { key: 'docker', title: 'Docker Build', desc: 'Build container images and push them to a registry.', icon: '📦' },
+      { key: 'k8s', title: 'Kubernetes Deploy', desc: 'Orchestrate containers and schedule pods.', icon: '☸️' },
+      { key: 'argocd', title: 'ArgoCD GitOps', desc: 'Sync your K8s cluster with your Git repository.', icon: '🚀' },
+    ];
+
+    return (
+      <div style={{ backgroundColor: '#0b1120', minHeight: '100vh', color: 'white', padding: '40px' }}>
+        <header style={{ marginBottom: '50px', textAlign: 'center' }}>
+          <h1 style={{ fontSize: '36px', color: '#60a5fa', margin: '0 0 10px 0', fontFamily: 'monospace' }}>DEVOPS EXPLORER</h1>
+          <p style={{ color: '#94a3b8', fontSize: '16px' }}>Master the modern DevOps pipeline visually.</p>
+        </header>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px', maxWidth: '1000px', margin: '0 auto' }}>
+          {moduleList.map((mod) => (
+            <div 
+              key={mod.key}
+              onClick={() => {
+                setCurrentModuleKey(mod.key);
+                setNodes(MODULES[mod.key].nodes);
+                setEdges(MODULES[mod.key].edges);
+                setPackets([]);
+                setShowQuiz(false);
+                setView('simulator');
+              }}
+              style={{ 
+                backgroundColor: '#1e293b', border: '1px solid #334155', borderRadius: '8px', padding: '24px', cursor: 'pointer',
+                transition: 'all 0.2s ease', display: 'flex', flexDirection: 'column', gap: '15px'
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.border = '1px solid #3b82f6'}
+              onMouseLeave={(e) => e.currentTarget.style.border = '1px solid #334155'}
+            >
+              <div style={{ fontSize: '32px' }}>{mod.icon}</div>
+              <h2 style={{ margin: 0, fontSize: '20px', color: 'white' }}>{mod.title}</h2>
+              <p style={{ margin: 0, fontSize: '14px', color: '#94a3b8', lineHeight: '1.5' }}>{mod.desc}</p>
+              
+              {completedModules[mod.key] ? (
+                <div style={{ marginTop: 'auto', fontSize: '12px', color: '#34d399', fontWeight: 'bold' }}>✅ COMPLETED</div>
+              ) : (
+                <div style={{ marginTop: 'auto', fontSize: '12px', color: '#64748b' }}>Not started</div>
+              )}
+            </div>
+          ))}
+        </div>
+
+        {/* RESET PROGRESS BUTTON */}
+        <div style={{ textAlign: 'center', marginTop: '50px' }}>
+          <button 
+            onClick={() => {
+              if(window.confirm("Are you sure you want to reset all progress?")) {
+                localStorage.removeItem('devopsProgress');
+                setCompletedModules({});
+              }
+            }}
+            style={{ background: 'transparent', border: '1px solid #ef4444', color: '#ef4444', padding: '8px 16px', borderRadius: '4px', cursor: 'pointer', fontSize: '12px', fontFamily: 'monospace' }}
+          >
+            Reset All Progress
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // ==========================================
+  // 2. THE SIMULATOR DASHBOARD VIEW
+  // ==========================================
   return (
     <div className="app-container">
       <header className="top-header">
-        <h1>DEVOPS EXPLORER</h1>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+          <button 
+            onClick={() => setView('home')}
+            style={{ background: 'transparent', border: 'none', color: '#94a3b8', cursor: 'pointer', fontSize: '14px', fontFamily: 'monospace' }}
+          >
+            ← Back to Modules
+          </button>
+          <h1 style={{ fontSize: '18px', margin: 0 }}>DEVOPS EXPLORER</h1>
+        </div>
         <div className="header-progress">MODULE: {currentModuleKey.toUpperCase()}</div>
       </header>
 
@@ -175,17 +246,10 @@ export default function App() {
             <option value="argocd">Module 4: ArgoCD (GitOps) {completedModules.argocd ? '✅' : ''}</option>
           </select>
 
-            <h2 style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <h2 style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             {activeModule.title}
             {completedModules[currentModuleKey] && (
-              <span style={{ 
-                fontSize: '10px', 
-                backgroundColor: '#064e3b', 
-                color: '#34d399', 
-                padding: '2px 8px', 
-                borderRadius: '12px',
-                border: '1px solid #10b981'
-              }}>
+              <span style={{ fontSize: '10px', backgroundColor: '#064e3b', color: '#34d399', padding: '2px 8px', borderRadius: '12px', border: '1px solid #10b981' }}>
                 COMPLETED
               </span>
             )}
@@ -196,50 +260,21 @@ export default function App() {
             </p>
           </div>
 
-          {/* ADD THIS NEW BLOCK */}
           {activeModule.codeSnippet && (
             <div style={{ marginBottom: '20px' }}>
-              <div style={{ 
-                backgroundColor: '#0f172a', 
-                border: '1px solid #334155', 
-                borderRadius: '6px', 
-                overflow: 'hidden' 
-              }}>
-                {/* Filename Header */}
-                <div style={{ 
-                  padding: '8px 12px', 
-                  backgroundColor: '#1e293b', 
-                  borderBottom: '1px solid #334155',
-                  fontSize: '12px',
-                  color: '#94a3b8',
-                  fontFamily: 'monospace',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px'
-                }}>
+              <div style={{ backgroundColor: '#0f172a', border: '1px solid #334155', borderRadius: '6px', overflow: 'hidden' }}>
+                <div style={{ padding: '8px 12px', backgroundColor: '#1e293b', borderBottom: '1px solid #334155', fontSize: '12px', color: '#94a3b8', fontFamily: 'monospace', display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#ef4444' }}></div>
                   <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#f59e0b' }}></div>
                   <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#10b981' }}></div>
                   <span style={{ marginLeft: '8px' }}>{activeModule.codeSnippet.filename}</span>
                 </div>
-                
-                {/* The Code */}
-                <pre style={{ 
-                  margin: 0, 
-                  padding: '12px', 
-                  fontSize: '12px', 
-                  color: '#e2e8f0', 
-                  fontFamily: 'monospace',
-                  overflowX: 'auto',
-                  lineHeight: '1.4',
-                  whiteSpace: 'pre-wrap' // <-- ADD THIS LINE
-                }}>
+                <pre style={{ margin: 0, padding: '12px', fontSize: '12px', color: '#e2e8f0', fontFamily: 'monospace', overflowX: 'auto', lineHeight: '1.4', whiteSpace: 'pre-wrap' }}>
                   <code>{activeModule.codeSnippet.code}</code>
                 </pre>
               </div>
             </div>
           )}
-          {/* END OF NEW BLOCK */}
           
           <button 
             onClick={runAnimation} 
