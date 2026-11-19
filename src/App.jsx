@@ -1,5 +1,5 @@
+import { useState, useEffect } from 'react';
 import { argocdModule } from './data/argocdModule';
-import { useState } from 'react';
 import ReactFlow, { Background, useNodesState, useEdgesState } from 'reactflow';
 import 'reactflow/dist/style.css';
 import DevOpsNode from './ArgocdNode'; 
@@ -29,6 +29,18 @@ export default function App() {
   const [packets, setPackets] = useState([]);
   const [showQuiz, setShowQuiz] = useState(false);
   const [selectedAnswer, setSelectedAnswer] = useState(null);
+
+  // Load saved progress from localStorage, or start with an empty object
+  const [completedModules, setCompletedModules] = useState(() => {
+    const saved = localStorage.getItem('devopsProgress');
+    return saved ? JSON.parse(saved) : {};
+  });
+
+    // Save to localStorage whenever completedModules changes
+  useEffect(() => {
+    localStorage.setItem('devopsProgress', JSON.stringify(completedModules));
+  }, [completedModules]);
+  
 
   const handleModuleChange = (event) => {
     const newModuleKey = event.target.value;
@@ -128,9 +140,17 @@ export default function App() {
     setShowQuiz(true); 
   };
 
-  const handleAnswerClick = (index) => {
-    if (selectedAnswer !== null) return;
+    const handleAnswerClick = (index) => {
+    if (selectedAnswer !== null) return; // Prevent changing answer
     setSelectedAnswer(index);
+
+    // If they got it right, mark this module as complete!
+    if (index === activeModule.quiz.correctIndex) {
+      setCompletedModules((prev) => ({
+        ...prev,
+        [currentModuleKey]: true
+      }));
+    }
   };
 
   const activeModule = MODULES[currentModuleKey];
@@ -149,13 +169,27 @@ export default function App() {
             onChange={handleModuleChange}
             style={{ width: '100%', padding: '10px', background: '#1e293b', color: 'white', border: '1px solid #334155', borderRadius: '4px', marginBottom: '20px', fontFamily: 'monospace', fontWeight: 'bold' }}
           >
-            <option value="git">Module 1: Git Workflow</option>
-            <option value="docker">Module 2: Docker Build</option>
-            <option value="k8s">Module 3: Kubernetes Deploy</option>
-            <option value="argocd">Module 4: ArgoCD (GitOps)</option>
+            <option value="git">Module 1: Git Workflow {completedModules.git ? '✅' : ''}</option>
+            <option value="docker">Module 2: Docker Build {completedModules.docker ? '✅' : ''}</option>
+            <option value="k8s">Module 3: Kubernetes Deploy {completedModules.k8s ? '✅' : ''}</option>
+            <option value="argocd">Module 4: ArgoCD (GitOps) {completedModules.argocd ? '✅' : ''}</option>
           </select>
 
-                    <h2>{activeModule.title}</h2>
+            <h2 style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            {activeModule.title}
+            {completedModules[currentModuleKey] && (
+              <span style={{ 
+                fontSize: '10px', 
+                backgroundColor: '#064e3b', 
+                color: '#34d399', 
+                padding: '2px 8px', 
+                borderRadius: '12px',
+                border: '1px solid #10b981'
+              }}>
+                COMPLETED
+              </span>
+            )}
+          </h2>
           <div style={{ marginBottom: '20px' }}>
             <p style={{ fontSize: '13px', color: '#94a3b8', lineHeight: '1.5' }}>
               {activeModule.desc}
