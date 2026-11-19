@@ -95,5 +95,3 @@ If you post this on LinkedIn, here is a template you can use:
 > View the code on GitHub: https://github.com/mierule7/ArgoCD-Training.git
 >
 > #DevOps #React #WebDevelopment #Portfolio #GitOps
-
-You've done an incredible job. The code is clean, the UI looks professional, and it solves a real educational problem. You should be very proud of this project!
