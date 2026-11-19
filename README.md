@@ -40,17 +40,20 @@ To run this project locally on your machine:
 
 2. Navigate into the project folder:
 
-bash
+```bash
 cd ArgoCD-Training
+```
 
 3. Install dependencies:
 
-bash
+```bash
 npm install
+```
 
 4. Start the development server:
 
-bash
+```bash
 npm run dev
+```
 
 5. Open http://localhost:5173 in your browser.
