@@ -136,12 +136,56 @@ export default function App() {
             <option value="k8s">Module 3: Kubernetes Deploy</option>
           </select>
 
-          <h2>{activeModule.title}</h2>
+                    <h2>{activeModule.title}</h2>
           <div style={{ marginBottom: '20px' }}>
             <p style={{ fontSize: '13px', color: '#94a3b8', lineHeight: '1.5' }}>
               {activeModule.desc}
             </p>
           </div>
+
+          {/* ADD THIS NEW BLOCK */}
+          {activeModule.codeSnippet && (
+            <div style={{ marginBottom: '20px' }}>
+              <div style={{ 
+                backgroundColor: '#0f172a', 
+                border: '1px solid #334155', 
+                borderRadius: '6px', 
+                overflow: 'hidden' 
+              }}>
+                {/* Filename Header */}
+                <div style={{ 
+                  padding: '8px 12px', 
+                  backgroundColor: '#1e293b', 
+                  borderBottom: '1px solid #334155',
+                  fontSize: '12px',
+                  color: '#94a3b8',
+                  fontFamily: 'monospace',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px'
+                }}>
+                  <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#ef4444' }}></div>
+                  <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#f59e0b' }}></div>
+                  <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#10b981' }}></div>
+                  <span style={{ marginLeft: '8px' }}>{activeModule.codeSnippet.filename}</span>
+                </div>
+                
+                {/* The Code */}
+                <pre style={{ 
+                  margin: 0, 
+                  padding: '12px', 
+                  fontSize: '12px', 
+                  color: '#e2e8f0', 
+                  fontFamily: 'monospace',
+                  overflowX: 'auto',
+                  lineHeight: '1.4'
+                }}>
+                  <code>{activeModule.codeSnippet.code}</code>
+                </pre>
+              </div>
+            </div>
+          )}
+          {/* END OF NEW BLOCK */}
           
           <button 
             onClick={runAnimation} 
