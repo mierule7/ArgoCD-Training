@@ -178,7 +178,8 @@ export default function App() {
                   color: '#e2e8f0', 
                   fontFamily: 'monospace',
                   overflowX: 'auto',
-                  lineHeight: '1.4'
+                  lineHeight: '1.4',
+                  whiteSpace: 'pre-wrap' // <-- ADD THIS LINE
                 }}>
                   <code>{activeModule.codeSnippet.code}</code>
                 </pre>
