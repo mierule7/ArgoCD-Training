@@ -1,3 +1,4 @@
+import { argocdModule } from './data/argocdModule';
 import { useState } from 'react';
 import ReactFlow, { Background, useNodesState, useEdgesState } from 'reactflow';
 import 'reactflow/dist/style.css';
@@ -16,7 +17,8 @@ const nodeTypes = { custom: DevOpsNode };
 const MODULES = {
   git: gitModule,
   docker: dockerModule,
-  k8s: k8sModule
+  k8s: k8sModule,
+  argocd: argocdModule // <-- Add this
 };
 
 export default function App() {
@@ -105,6 +107,22 @@ export default function App() {
       setNodeActive('controlplane', false);
       setNodeActive('worker', false);
     }
+      else if (currentModuleKey === 'argocd') {
+      setNodeActive('argocd', true);
+      setEdgeActive('e-git-argocd', true);
+      addPacket({ time: "0.000s", src: "ArgoCD", dst: "Git Repo", proto: "HTTPS", info: "Polling repository for changes", size: "2 KB" });
+      await wait(1500);
+      
+      setEdgeActive('e-git-argocd', false);
+      setEdgeActive('e-argocd-k8s', true);
+      setNodeActive('k8s', true);
+      addPacket({ time: "1.500s", src: "ArgoCD", dst: "K8s Cluster", proto: "kubectl", info: "Sync: Apply manifests", size: "12 KB" });
+      await wait(1500);
+      
+      setEdgeActive('e-argocd-k8s', false);
+      setNodeActive('argocd', false);
+      setNodeActive('k8s', false);
+    }
 
     setIsAnimating(false);
     setShowQuiz(true); 
@@ -134,6 +152,7 @@ export default function App() {
             <option value="git">Module 1: Git Workflow</option>
             <option value="docker">Module 2: Docker Build</option>
             <option value="k8s">Module 3: Kubernetes Deploy</option>
+            <option value="argocd">Module 4: ArgoCD (GitOps)</option>
           </select>
 
                     <h2>{activeModule.title}</h2>
