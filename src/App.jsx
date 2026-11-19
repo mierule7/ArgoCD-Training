@@ -151,11 +151,15 @@ export default function App() {
   // 1. THE LANDING PAGE VIEW
   // ==========================================
   if (view === 'home') {
-    const moduleList = [
+        const moduleList = [
       { key: 'git', title: 'Git Workflow', desc: 'Learn how to commit, push, and trigger CI/CD pipelines.', icon: '🌿' },
       { key: 'docker', title: 'Docker Build', desc: 'Build container images and push them to a registry.', icon: '📦' },
       { key: 'k8s', title: 'Kubernetes Deploy', desc: 'Orchestrate containers and schedule pods.', icon: '☸️' },
       { key: 'argocd', title: 'ArgoCD GitOps', desc: 'Sync your K8s cluster with your Git repository.', icon: '🚀' },
+      // NEW MODULES
+      { key: 'terraform', title: 'Terraform IaC', desc: 'Provision infrastructure using code.', icon: '🏗️', comingSoon: true },
+      { key: 'prometheus', title: 'Prometheus', desc: 'Monitor your clusters and set up alerts.', icon: '📊', comingSoon: true },
+      { key: 'jenkins', title: 'Jenkins CI/CD', desc: 'Build automated pipelines for deployment.', icon: '⚙️', comingSoon: true },
     ];
 
     return (
@@ -166,10 +170,14 @@ export default function App() {
         </header>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px', maxWidth: '1000px', margin: '0 auto' }}>
-          {moduleList.map((mod) => (
+                    {moduleList.map((mod) => (
             <div 
               key={mod.key}
               onClick={() => {
+                if (mod.comingSoon) {
+                  alert("This module is currently in development. Coming soon!");
+                  return;
+                }
                 setCurrentModuleKey(mod.key);
                 setNodes(MODULES[mod.key].nodes);
                 setEdges(MODULES[mod.key].edges);
@@ -178,12 +186,43 @@ export default function App() {
                 setView('simulator');
               }}
               style={{ 
-                backgroundColor: '#1e293b', border: '1px solid #334155', borderRadius: '8px', padding: '24px', cursor: 'pointer',
-                transition: 'all 0.2s ease', display: 'flex', flexDirection: 'column', gap: '15px'
+                backgroundColor: '#1e293b', 
+                border: '1px solid #334155', 
+                borderRadius: '8px', 
+                padding: '24px', 
+                cursor: mod.comingSoon ? 'not-allowed' : 'pointer',
+                transition: 'all 0.2s ease', 
+                display: 'flex', 
+                flexDirection: 'column', 
+                gap: '15px',
+                opacity: mod.comingSoon ? 0.6 : 1, // Fade out the coming soon cards
+                position: 'relative' // Needed for the absolute badge
               }}
-              onMouseEnter={(e) => e.currentTarget.style.border = '1px solid #3b82f6'}
-              onMouseLeave={(e) => e.currentTarget.style.border = '1px solid #334155'}
+              onMouseEnter={(e) => {
+                if (!mod.comingSoon) e.currentTarget.style.border = '1px solid #3b82f6';
+              }}
+              onMouseLeave={(e) => {
+                if (!mod.comingSoon) e.currentTarget.style.border = '1px solid #334155';
+              }}
             >
+              
+              {/* COMING SOON BADGE */}
+              {mod.comingSoon && (
+                <div style={{ 
+                  position: 'absolute', 
+                  top: '15px', 
+                  right: '15px', 
+                  backgroundColor: '#f59e0b', 
+                  color: '#0f172a', 
+                  fontSize: '10px', 
+                  fontWeight: 'bold', 
+                  padding: '4px 8px', 
+                  borderRadius: '12px' 
+                }}>
+                  IN PROGRESS
+                </div>
+              )}
+
               <div style={{ fontSize: '32px' }}>{mod.icon}</div>
               <h2 style={{ margin: 0, fontSize: '20px', color: 'white' }}>{mod.title}</h2>
               <p style={{ margin: 0, fontSize: '14px', color: '#94a3b8', lineHeight: '1.5' }}>{mod.desc}</p>
@@ -191,7 +230,9 @@ export default function App() {
               {completedModules[mod.key] ? (
                 <div style={{ marginTop: 'auto', fontSize: '12px', color: '#34d399', fontWeight: 'bold' }}>✅ COMPLETED</div>
               ) : (
-                <div style={{ marginTop: 'auto', fontSize: '12px', color: '#64748b' }}>Not started</div>
+                <div style={{ marginTop: 'auto', fontSize: '12px', color: '#64748b' }}>
+                  {mod.comingSoon ? 'Coming Soon' : 'Not started'}
+                </div>
               )}
             </div>
           ))}
